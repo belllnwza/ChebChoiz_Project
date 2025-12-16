@@ -115,6 +115,11 @@ async function initDbUpdates() {
 
 initDbUpdates();
 
+// Helper to map price level 1-5 to DB params
+function mapPriceLevel(level) {
+    const map = { 1: 10002, 2: 10003, 3: 10004, 4: 10005, 5: 10006 };
+    return map[level] || 10002;
+}
 
 // ==========================================
 //              API ENDPOINTS
@@ -198,7 +203,19 @@ app.post('/api/reset-password', async (req, res) => {
     }
 });
 
-// 4. GET MENU (User Specific)
+// 4. GET OPTIONS (Categories & Situations)
+app.get('/api/options', async (req, res) => {
+    try {
+        const [categories] = await pool.execute('SELECT CATE_ID as id, CATE_NAME as name FROM CATEGORY ORDER BY CATE_ID');
+        const [situations] = await pool.execute('SELECT SIT_ID as id, SIT_NAME as name FROM SITUATION ORDER BY SIT_ID');
+        res.json({ categories, situations });
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ success: false, message: 'Server error' });
+    }
+});
+
+// 5. GET MENU (User Specific)
 app.get('/api/menu', async (req, res) => {
     const userId = req.query.userId;
 
@@ -279,7 +296,7 @@ app.get('/api/menu', async (req, res) => {
     }
 });
 
-// 5. GET HISTORY
+// 6. GET HISTORY
 app.get('/api/history/:userId', async (req, res) => {
     const userId = req.params.userId;
     try {
@@ -349,7 +366,7 @@ app.get('/api/history/:userId', async (req, res) => {
     }
 });
 
-// 6. ADD HISTORY
+// 7. ADD HISTORY
 app.post('/api/history', async (req, res) => {
     const { userId, menuName } = req.body;
 
@@ -380,24 +397,34 @@ app.post('/api/history', async (req, res) => {
     }
 });
 
-
-// 7. ADD MENU (Custom)
+// 8. ADD MENU (Custom)
 app.post('/api/menu/add', async (req, res) => {
-    const { userId, name, priceLevel, imageUrl } = req.body; // priceLevel 1-5
+    const { userId, name, priceLevel, imageUrl, categoryIds, situationIds } = req.body;
     try {
         const [rows] = await pool.execute('SELECT MAX(MENU_ID) as maxId FROM MENU');
         let newId = (rows[0].maxId || 20000) + 1;
-        if (newId < 20000) newId = 20000; // Custom items start higher
+        if (newId < 20000) newId = 20000;
 
-        // Map priceLevel to PRICE_ID
-        // 1=10002, 2=10003, 3=10004, 4=10005, 5=10006
-        const priceMap = { 1: 10002, 2: 10003, 3: 10004, 4: 10005, 5: 10006 };
-        const priceId = priceMap[priceLevel] || 10002;
+        const priceId = mapPriceLevel(priceLevel);
 
         await pool.execute(
             'INSERT INTO MENU (MENU_ID, MENU_NAME, PRICE_ID, IMAGE_URL, USER_ID, MENU_PRICE) VALUES (?, ?, ?, ?, ?, 0)',
             [newId, name, priceId, imageUrl, userId]
         );
+
+        // Insert Categories
+        if (categoryIds && Array.isArray(categoryIds)) {
+            for (const cateId of categoryIds) {
+                await pool.execute('INSERT INTO MENU_CATEGORY (MENU_ID, CATE_ID) VALUES (?, ?)', [newId, cateId]);
+            }
+        }
+
+        // Insert Situations
+        if (situationIds && Array.isArray(situationIds)) {
+            for (const sitId of situationIds) {
+                await pool.execute('INSERT INTO MENU_SITUATION (MENU_ID, SIT_ID) VALUES (?, ?)', [newId, sitId]);
+            }
+        }
 
         res.json({ success: true, message: 'Menu added', menuId: newId });
     } catch (err) {
@@ -406,7 +433,7 @@ app.post('/api/menu/add', async (req, res) => {
     }
 });
 
-// 8. DELETE MENU (Hide or Delete)
+// 9. DELETE MENU (Hide or Delete)
 app.post('/api/menu/delete', async (req, res) => {
     const { userId, menuId } = req.body;
     try {
@@ -431,23 +458,21 @@ app.post('/api/menu/delete', async (req, res) => {
     }
 });
 
-// 9. EDIT MENU
+// 10. EDIT MENU
 app.post('/api/menu/edit', async (req, res) => {
-    const { userId, menuId, name, priceLevel, imageUrl } = req.body;
+    const { userId, menuId, name, priceLevel, imageUrl, categoryIds, situationIds } = req.body;
     try {
         const [rows] = await pool.execute('SELECT * FROM MENU WHERE MENU_ID = ?', [menuId]);
         if (rows.length === 0) return res.status(404).json({ success: false, message: 'Menu not found' });
 
         const existingMenu = rows[0];
         const isCustom = existingMenu.USER_ID != null;
+        let finalMenuId = menuId;
 
-        // Map priceLevel
-        const priceMap = { 1: 10002, 2: 10003, 3: 10004, 4: 10005, 5: 10006 };
-        const priceId = priceMap[priceLevel] || 10002;
+        const priceId = mapPriceLevel(priceLevel);
         const finalImage = imageUrl || existingMenu.IMAGE_URL;
 
         if (isCustom) {
-            // Update directly if user owns it
             if (existingMenu.USER_ID != userId) return res.status(403).json({ success: false, message: 'Not authorized' });
 
             await pool.execute(
@@ -456,10 +481,8 @@ app.post('/api/menu/edit', async (req, res) => {
             );
         } else {
             // System menu: Hide original, Create new custom copy
-            // 1. Hide System Menu
             await pool.execute('INSERT IGNORE INTO USER_HIDDEN_MENU (USER_ID, MENU_ID) VALUES (?, ?)', [userId, menuId]);
 
-            // 2. Create Custom Copy
             const [maxRows] = await pool.execute('SELECT MAX(MENU_ID) as maxId FROM MENU');
             let newId = (maxRows[0].maxId || 20000) + 1;
             if (newId < 20000) newId = 20000;
@@ -468,6 +491,22 @@ app.post('/api/menu/edit', async (req, res) => {
                 'INSERT INTO MENU (MENU_ID, MENU_NAME, PRICE_ID, IMAGE_URL, USER_ID, MENU_PRICE) VALUES (?, ?, ?, ?, ?, 0)',
                 [newId, name, priceId, finalImage, userId]
             );
+            finalMenuId = newId;
+        }
+
+        // Update Categories/Situations (Delete old, Insert new)
+        await pool.execute('DELETE FROM MENU_CATEGORY WHERE MENU_ID = ?', [finalMenuId]);
+        await pool.execute('DELETE FROM MENU_SITUATION WHERE MENU_ID = ?', [finalMenuId]);
+
+        if (categoryIds && Array.isArray(categoryIds)) {
+            for (const cateId of categoryIds) {
+                await pool.execute('INSERT INTO MENU_CATEGORY (MENU_ID, CATE_ID) VALUES (?, ?)', [finalMenuId, cateId]);
+            }
+        }
+        if (situationIds && Array.isArray(situationIds)) {
+            for (const sitId of situationIds) {
+                await pool.execute('INSERT INTO MENU_SITUATION (MENU_ID, SIT_ID) VALUES (?, ?)', [finalMenuId, sitId]);
+            }
         }
 
         res.json({ success: true, message: 'Menu edited' });
@@ -478,7 +517,7 @@ app.post('/api/menu/edit', async (req, res) => {
     }
 });
 
-// 10. RESET MENU
+// 11. RESET MENU
 app.post('/api/menu/reset', async (req, res) => {
     const { userId } = req.body;
     try {
@@ -492,7 +531,45 @@ app.post('/api/menu/reset', async (req, res) => {
     }
 });
 
+app.post('/api/menu/detail', async (req, res) => {
+    const { userId, menuId } = req.body;
+    try {
+        const [rows] = await pool.execute('SELECT * FROM MENU WHERE MENU_ID = ?', [menuId]);
+        if (rows.length === 0) return res.status(404).json({ success: false, message: 'Menu not found' });
+
+        const menu = rows[0];
+
+        // Fetch Categories
+        const [categories] = await pool.execute(`
+            SELECT c.CATE_ID, c.CATE_NAME 
+            FROM MENU_CATEGORY mc 
+            JOIN CATEGORY c ON mc.CATE_ID = c.CATE_ID 
+            WHERE mc.MENU_ID = ?
+        `, [menuId]);
+
+        // Fetch Situations
+        const [situations] = await pool.execute(`
+            SELECT s.SIT_ID, s.SIT_NAME 
+            FROM MENU_SITUATION ms 
+            JOIN SITUATION s ON ms.SIT_ID = s.SIT_ID 
+            WHERE ms.MENU_ID = ?
+        `, [menuId]);
+
+        // Add to response
+        menu.categories = categories;
+        menu.situations = situations;
+        // Also helper arrays for easier frontend usage
+        menu.categoryIds = categories.map(c => c.CATE_ID);
+        menu.situationIds = situations.map(s => s.SIT_ID);
+
+        res.json({ success: true, menu });
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ success: false, message: err.message });
+    }
+});
 
 app.listen(port, () => {
     console.log(`🚀 Server running on ${port}`);
 });
+

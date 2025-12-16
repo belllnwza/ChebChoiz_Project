@@ -61,9 +61,12 @@ input[type="password"] {
     color: #da2914;
 }
 
-.forgot-password {
-    display: block;
+.fgpw {
+    width: 100%;
     text-align: right;
+}
+
+.forgot-password {
     color: #ca0000;
     text-decoration: underline;
     font-size: 0.9rem;

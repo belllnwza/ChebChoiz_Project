@@ -60,9 +60,16 @@ body {
     background-color: rgba(0, 0, 0, 0.5);
 }
 
+.menumodal {
+    display: flex;
+    justify-self: center;
+    align-content: center;
+}
+
 .modal-content {
     background-color: #fefefe;
-    margin: 15% auto;
+    margin: 100px;
+    justify-self: center;
     padding: 20px;
     border: 1px solid #888;
     width: 80%;
@@ -114,4 +121,76 @@ body {
 
 .save-btn:hover {
     background-color: #ffc107;
+}
+
+/* --- Batch Delete Styles --- */
+.card-checkbox-container {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    z-index: 10;
+    display: none;
+    /* Toggled by JS */
+}
+
+.card-checkbox {
+    width: 20px;
+    height: 20px;
+    cursor: pointer;
+}
+
+.batch-delete-actions {
+    position: fixed;
+    bottom: 20px;
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: #ff5252;
+    padding: 10px 20px;
+    border-radius: 30px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+    display: none;
+    /* Toggled by JS */
+    z-index: 1000;
+}
+
+.batch-delete-btn {
+    background: none;
+    border: none;
+    color: white;
+    font-size: 16px;
+    font-weight: bold;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+/* --- Modal Multi-select Styles --- */
+.checkbox-group {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 5px;
+    /* Match input style */
+    width: 100%;
+    padding: 8px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    box-sizing: border-box;
+    /* Ensure padding doesn't overflow width */
+}
+
+.checkbox-item {
+    display: flex;
+    align-items: center;
+    background: #f1f1f1;
+    padding: 5px 10px;
+    border-radius: 15px;
+    cursor: pointer;
+    font-size: 14px;
+}
+
+.checkbox-item input {
+    width: auto;
+    margin-right: 5px;
 }

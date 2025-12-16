@@ -164,6 +164,32 @@ async function loadHistoryFromApi(sortOrder) {
     }
 }
 
+async function deleteMenu(id) {
+    // 1. ตรวจสอบการยืนยันของผู้ใช้
+    if (confirm("คุณแน่ใจหรือไม่ว่าต้องการลบเมนูนี้?")) {
+        try {
+            // 2. ใช้ Template Literal (Backticks) ให้ถูกต้อง
+            const response = await fetch(`/api/menus/${id}?user_id=${currentUserId}`, { 
+                method: 'DELETE' 
+            });
+
+            // 3. ตรวจสอบสถานะการตอบกลับของ API
+            if (response.ok) { // response.ok เป็นจริงสำหรับ Status 200-299
+                alert("ลบเมนูเรียบร้อยแล้ว!");
+                location.reload(); // โหลดข้อมูลใหม่ที่อัปเดตแล้ว
+            } else {
+                // ถ้า API ตอบกลับด้วยสถานะผิดพลาด (เช่น 404, 500)
+                const errorData = await response.json(); // พยายามดึงข้อความ Error จาก JSON
+                alert(`เกิดข้อผิดพลาดในการลบเมนู: ${errorData.error || response.statusText}`);
+            }
+        } catch (error) {
+            // 4. จัดการข้อผิดพลาดในการเชื่อมต่อ (Network Error)
+            console.error("Fetch Error:", error);
+            alert("เกิดข้อผิดพลาดในการเชื่อมต่อเครือข่าย กรุณาลองใหม่อีกครั้ง");
+        }
+    }
+}
+
 document.addEventListener('DOMContentLoaded', () => {
     const userNameDisplay = document.getElementById('user-name-display');
     const userIdDisplay = document.getElementById('user-id-display');
@@ -199,4 +225,18 @@ document.addEventListener('DOMContentLoaded', () => {
         localStorage.clear();
         window.location.href = 'ChebChoiz_login.html';
     });
+
+    const currentUserId = document.getElementById('user-id-display').innerText;
+
+    async function loadMyMenus() {
+    // เรียก API โดยแนบ ID ไปด้วย
+    const response = await fetch('http://localhost:3000/api/my-menus/${currentUserId}');
+    const myMenus = await response.json();
+
+    // ส่งข้อมูลที่ได้ (ซึ่งเป็นของ User นี้คนเดียว) ไปวาดบนหน้าจอ
+    renderHistory(myMenus);
+}
+
+// เรียกทำงานเมื่อเปิดหน้าเว็บ
+loadMyMenus();
 });

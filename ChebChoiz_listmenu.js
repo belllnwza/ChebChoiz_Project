@@ -1,6 +1,10 @@
 const menuListContainer = document.getElementById('menu-list');
 const userId = localStorage.getItem('userId');
 let isEditMode = false;
+let isDeleteMode = false;
+let selectedDeleteIds = new Set();
+let allCategories = [];
+let allSituations = [];
 
 // --- Modal Elements ---
 const modal = document.getElementById('menuModal');
@@ -11,30 +15,77 @@ const menuIdInput = document.getElementById('menuId');
 const menuNameInput = document.getElementById('menuName');
 const menuPriceInput = document.getElementById('menuPrice');
 const menuImageInput = document.getElementById('menuImage');
+const categoryContainer = document.getElementById('category-container');
+const situationContainer = document.getElementById('situation-container');
+
+// --- Batch Delete Elements ---
+const batchDeleteBar = document.getElementById('batch-delete-bar');
+const confirmDeleteBtn = document.getElementById('confirm-delete-btn');
+const selectedCountSpan = document.getElementById('selected-count');
 
 // --- Helper Data ---
 const imageOverrides = {
-    "mushroom soup": "img/mushroom_soup.jpg", "grill & bbq": "img/grillandbbq.png", "yakisoba": "img/yakisoba.jpg",
-    "steak": "img/steak.jpg", "sandwich": "img/sandwich.jpg", "yen ta fo": "img/yentafo.jpg",
-    "tart": "img/tart.jpg", "sushi": "img/sushi.jpg", "steamed egg bun": "img/steamedeggbuns.jpg",
-    "shrimp fried rice": "img/shrimpfriedrice.jpg", "seafood": "img/seafood.jpg", "salad bar": "img/saladbar.webp",
-    "rad na": "img/radna.webp", "risotto": "img/risotto.jpg", "pumpkin soup": "img/pumpkinsoup.jpg",
-    "pork porridge": "img/porkporridge.webp", "pork bone soup": "img/porkbonesoup.webp", "pad see ew": "img/padseeew.jpg",
-    "omelet": "img/omelet.webp", "nachos": "img/nachos.jpg", "meatballs": "img/meatballs.jpg",
-    "mango sticky rice": "img/mangostickyrice.jpg", "lasagna": "img/lasagna.webp", "kimchi soup": "img/kimchisoup.webp",
-    "honey toast": "img/honeytoast.jpg", "french fries": "img/frenchfries.jpg", "doughnut": "img/doughnut.webp",
-    "curry rice": "img/curryrice.webp", "chicken basil": "img/chickenbasil.jpg", "boat noodles": "img/boatnoodles.webp",
-    "bingsu": "img/bingsu.webp", "beef bowl": "img/beefbowl.jpg", "mac & cheese": "img/macandcheese.jpg",
-    "corn cream": "img/corncream.jpg", "tom yum": "img/tomyum.jpg", "pineapple fired rice": "img/pineapplefriedrice.jpg",
-    "hainanese chicken rice": "img/hainanesechickenrice.webp", "hokkien mee": "img/hokkeinmee.jpg",
-    "kuay jub": "img/kuayjub.jpg", "sichuan soup": "img/sichuansoup.webp", "chocolate buffet": "img/chocolatebuffet.jpg",
-    "fish maw soup": "img/fishmawsoup.webp", "beef wellington": "img/beefwellington.jpg", "boston lobster": "img/bostonlobster.jpg",
-    "fresh berry buffet": "img/freshberrybuffet.jpg", "fettuccine alfredo": "img/fettuccinealfredo.jpg",
-    "herb roasted chicken": "img/herbroastedchicken.jpg", "foie gras": "img/foiegras.jpg", "nuggets": "img/nuggets.jpg",
-    "fish & chips": "img/fishchips.webp", "mapo tofu": "img/mapotofu.jpg", "garlic bread": "img/garlicbread.jpg",
-    "sashimi buffet": "img/sashimi.jpg", "chicken wrap": "img/chickenwrap.jpg", "croissants": "img/croissants.jpg",
-    "roast duck noodles": "img/roastducknoodles.jpg", "chicken wings": "img/chickenwings.webp", "udon": "img/udon.jpg",
-    "cheesecake": "img/cheesecake.jpg", "american fried rice": "img/americanfriedrice.webp", "abalone soup": "img/abalonesoup.webp"
+    "mushroom soup": "img/mushroom_soup.jpg",
+    "grill & bbq": "img/grillandbbq.png",
+    "yakisoba": "img/yakisoba.jpg",
+    "steak": "img/steak.jpg",
+    "sandwich": "img/sandwich.jpg",
+    "yen ta fo": "img/yentafo.jpg",
+    "tart": "img/tart.jpg",
+    "sushi": "img/sushi.jpg",
+    "steamed egg bun": "img/steamedeggbuns.jpg",
+    "shrimp fried rice": "img/shrimpfriedrice.jpg",
+    "seafood": "img/seafood.jpg",
+    "salad bar": "img/saladbar.webp",
+    "rad na": "img/radna.webp",
+    "risotto": "img/risotto.jpg",
+    "pumpkin soup": "img/pumpkinsoup.jpg",
+    "pork porridge": "img/porkporridge.webp",
+    "pork bone soup": "img/porkbonesoup.webp",
+    "pad see ew": "img/padseeew.jpg",
+    "omelet": "img/omelet.webp",
+    "nachos": "img/nachos.jpg",
+    "meatballs": "img/meatballs.jpg",
+    "mango sticky rice": "img/mangostickyrice.jpg",
+    "lasagna": "img/lasagna.webp",
+    "kimchi soup": "img/kimchisoup.webp",
+    "honey toast": "img/honeytoast.jpg",
+    "french fries": "img/frenchfries.jpg",
+    "doughnut": "img/doughnut.webp",
+    "curry rice": "img/curryrice.webp",
+    "chicken basil": "img/chickenbasil.jpg",
+    "boat noodles": "img/boatnoodles.webp",
+    "bingsu": "img/bingsu.webp",
+    "beef bowl": "img/beefbowl.jpg",
+    "mac & cheese": "img/macandcheese.jpg",
+    "corn cream": "img/corncream.jpg",
+    "tom yum": "img/tomyum.jpg",
+    "pineapple fired rice": "img/pineapplefriedrice.jpg",
+    "hainanese chicken rice": "img/hainanesechickenrice.webp",
+    "hokkien mee": "img/hokkeinmee.jpg",
+    "kuay jub": "img/kuayjub.jpg",
+    "sichuan soup": "img/sichuansoup.webp",
+    "chocolate buffet": "img/chocolatebuffet.jpg",
+    "fish maw soup": "img/fishmawsoup.webp",
+    "beef wellington": "img/beefwellington.jpg",
+    "boston lobster": "img/bostonlobster.jpg",
+    "fresh berry buffet": "img/freshberrybuffet.jpg",
+    "fettuccine alfredo": "img/fettuccinealfredo.jpg",
+    "herb roasted chicken": "img/herbroastedchicken.jpg",
+    "foie gras": "img/foiegras.jpg",
+    "nuggets": "img/nuggets.jpg",
+    "fish & chips": "img/fishchips.webp",
+    "mapo tofu": "img/mapotofu.jpg",
+    "garlic bread": "img/garlicbread.jpg",
+    "sashimi buffet": "img/sashimi.jpg",
+    "chicken wrap": "img/chickenwrap.jpg",
+    "croissants": "img/croissants.jpg",
+    "roast duck noodles": "img/roastducknoodles.jpg",
+    "chicken wings": "img/chickenwings.webp",
+    "udon": "img/udon.jpg",
+    "cheesecake": "img/cheesecake.jpg",
+    "american fried rice": "img/americanfriedrice.webp",
+    "abalone soup": "img/abalonesoup.webp"
 };
 
 const priceMapping = {
@@ -47,6 +98,41 @@ const priceMapping = {
 
 
 // --- Core Functions ---
+
+async function fetchOptions() {
+    try {
+        const res = await fetch('http://localhost:3000/api/options');
+        if (!res.ok) throw new Error("Status " + res.status);
+        const data = await res.json();
+        allCategories = data.categories || [];
+        allSituations = data.situations || [];
+
+        // Debug
+        // alert(`Loaded ${allCategories.length} categories and ${allSituations.length} situations`);
+    } catch (e) {
+        console.error("Failed to fetch options", e);
+        // alert("Failed to fetch options: " + e.message);
+    }
+}
+
+function renderCheckboxGroup(container, items, namePrefix, selectedIds = []) {
+    container.innerHTML = '';
+    items.forEach(item => {
+        const label = document.createElement('label');
+        label.className = 'checkbox-item';
+
+        const checkbox = document.createElement('input');
+        checkbox.type = 'checkbox';
+        checkbox.value = item.id;
+        checkbox.name = namePrefix; // e.g., "category"
+        if (selectedIds.includes(item.id)) checkbox.checked = true;
+
+        label.appendChild(checkbox);
+        label.appendChild(document.createTextNode(item.name));
+        container.appendChild(label);
+    });
+}
+
 
 function renderMenu(data) {
     menuListContainer.innerHTML = '';
@@ -62,20 +148,35 @@ function renderMenu(data) {
     data.forEach(item => {
         const card = document.createElement('div');
         card.className = 'history-card';
+        card.style.position = 'relative';
 
+        // Border highlighting
         if (isEditMode) {
-            card.style.border = "2px solid #ffca28";
+            card.style.border = "3px solid #ffca28";
             card.style.cursor = "pointer";
             card.onclick = () => openEditModal(item);
+        } else if (isDeleteMode) {
+            card.style.cursor = "pointer";
+            const isSelected = selectedDeleteIds.has(item.id);
+            card.style.border = isSelected ? "3px solid #ff5252" : "1px solid #ddd";
+            card.onclick = () => toggleDeleteSelection(item.id);
+        } else {
+            card.style.border = "none";
+            card.style.cursor = "default";
+            card.onclick = null;
         }
 
         const cleanName = item.name.toLowerCase().trim();
         const finalImage = imageOverrides[cleanName] || item.image || 'img/Logo.png';
         const priceText = priceMapping[item.price] || "Unknown Price";
 
+        // Checkbox only visible in delete mode (managed via CSS class .card-checkbox-container)
+        const checkboxDisplay = isDeleteMode ? 'block' : 'none';
+        const isChecked = selectedDeleteIds.has(item.id) ? 'checked' : '';
+
         card.innerHTML = `
-            <div class="delete-btn_container" style="display: none;">
-                <img class="delete-btn" src="img/delete.png" width="20px" height="20px" data-id="${item.id}" title="Delete Item">
+            <div class="card-checkbox-container" style="display: ${checkboxDisplay};">
+                <input type="checkbox" class="card-checkbox" ${isChecked} disabled> 
             </div>
 
             <div class="card-image-container">
@@ -89,19 +190,44 @@ function renderMenu(data) {
                 <p class="card-situation">Situation : ${item.situation || '-'}</p>
             </div>
         `;
-
-        // Handle Delete Button Click
-        const deleteBtn = card.querySelector('.delete-btn');
-        deleteBtn.addEventListener('click', (e) => {
-            e.stopPropagation(); // Stop click from triggering Edit Modal
-            if (confirm(`Delete "${item.name}"?`)) {
-                deleteMenu(item.id);
-            }
-        });
+        // Removed individual delete btn logic in favor of batch delete
 
         menuListContainer.appendChild(card);
     });
 }
+
+function toggleDeleteSelection(id) {
+    if (selectedDeleteIds.has(id)) {
+        selectedDeleteIds.delete(id);
+    } else {
+        selectedDeleteIds.add(id);
+    }
+    updateBatchDeleteUI();
+    loadMenuFromApi(); // Re-render to show selection borders
+}
+
+function updateBatchDeleteUI() {
+    selectedCountSpan.textContent = selectedDeleteIds.size;
+    batchDeleteBar.style.display = isDeleteMode ? 'block' : 'none';
+}
+
+async function executeBatchDelete() {
+    if (selectedDeleteIds.size === 0) return alert("Select items to delete");
+    if (!confirm(`Delete ${selectedDeleteIds.size} items?`)) return;
+
+    // Execute deletes in parallel
+    const deletePromises = Array.from(selectedDeleteIds).map(id => deleteMenu(id, true)); // pass true to suppress individual alerts
+    await Promise.all(deletePromises);
+
+    alert("Deleted successfully");
+    selectedDeleteIds.clear();
+    // Keep delete mode on or turn off? Let's keep it on for now, or reset.
+    // Resetting for cleaner flow
+    isDeleteMode = false;
+    updateBatchDeleteUI();
+    loadMenuFromApi();
+}
+
 
 async function loadMenuFromApi() {
     try {
@@ -121,7 +247,7 @@ async function loadMenuFromApi() {
     }
 }
 
-async function deleteMenu(menuId) {
+async function deleteMenu(menuId, silent = false) {
     try {
         const response = await fetch('http://localhost:3000/api/menu/delete', {
             method: 'POST',
@@ -131,14 +257,16 @@ async function deleteMenu(menuId) {
         const res = await response.json();
 
         if (res.success) {
-            alert('Deleted successfully');
-            loadMenuFromApi();
+            if (!silent) {
+                alert('Deleted successfully');
+                loadMenuFromApi();
+            }
         } else {
-            alert('Error: ' + res.message);
+            console.error('Error deleting ' + menuId + ': ' + res.message);
         }
     } catch (e) {
         console.error(e);
-        alert('Failed to delete menu');
+        if (!silent) alert('Failed to delete menu');
     }
 }
 
@@ -172,16 +300,46 @@ function openAddModal() {
     menuNameInput.value = "";
     menuPriceInput.value = "1";
     menuImageInput.value = "";
+
+    renderCheckboxGroup(categoryContainer, allCategories, "category");
+    renderCheckboxGroup(situationContainer, allSituations, "situation");
+
     modal.style.display = "block";
 }
 
-function openEditModal(item) {
+async function openEditModal(item) {
     modalTitle.textContent = "Edit Menu";
     menuIdInput.value = item.id;
     menuNameInput.value = item.name;
-    menuPriceInput.value = item.price; // assuming price is 1-5 (mapped in backend)
+    menuPriceInput.value = item.price;
     menuImageInput.value = item.image;
-    modal.style.display = "block";
+
+    // Fetch full details (Category/Situation IDs)
+    try {
+        const response = await fetch('http://localhost:3000/api/menu/detail', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ userId, menuId: item.id })
+        });
+        const res = await response.json();
+
+        if (res.success && res.menu) {
+            const { categoryIds, situationIds, MENU_NAME, PRICE_ID, IMAGE_URL } = res.menu;
+
+            // Update fields closely with fresh DB data if needed, or trust `item`
+            // Mapping price ID back to 1-5 level if needed, or just keep item.price
+
+            renderCheckboxGroup(categoryContainer, allCategories, "category", categoryIds || []);
+            renderCheckboxGroup(situationContainer, allSituations, "situation", situationIds || []);
+
+            modal.style.display = "block";
+        } else {
+            alert("Failed to load menu details");
+        }
+    } catch (e) {
+        console.error(e);
+        alert("Error loading details");
+    }
 }
 
 // Close Modal Events
@@ -197,8 +355,12 @@ menuForm.onsubmit = async (e) => {
     const priceLevel = menuPriceInput.value;
     const imageUrl = menuImageInput.value;
 
+    // Collect Checkboxes
+    const categoryIds = Array.from(document.querySelectorAll('input[name="category"]:checked')).map(cb => parseInt(cb.value));
+    const situationIds = Array.from(document.querySelectorAll('input[name="situation"]:checked')).map(cb => parseInt(cb.value));
+
     const endpoint = id ? 'http://localhost:3000/api/menu/edit' : 'http://localhost:3000/api/menu/add';
-    const body = { userId, name, priceLevel, imageUrl };
+    const body = { userId, name, priceLevel, imageUrl, categoryIds, situationIds };
     if (id) body.menuId = id;
 
     try {
@@ -227,7 +389,9 @@ menuForm.onsubmit = async (e) => {
 
 document.addEventListener('DOMContentLoaded', () => {
 
-    loadMenuFromApi();
+    fetchOptions().then(() => {
+        loadMenuFromApi();
+    });
 
     // Back Button
     document.querySelector('.Arrow_container').addEventListener('click', (e) => {
@@ -248,16 +412,34 @@ document.addEventListener('DOMContentLoaded', () => {
 
     BIN_BTN.addEventListener('click', (e) => {
         e.preventDefault();
-        // Toggle delete buttons visibility
-        const allDeleteBtns = document.querySelectorAll('.delete-btn_container');
-        allDeleteBtns.forEach(btn => {
-            btn.style.display = (btn.style.display === 'none' || btn.style.display === '') ? 'flex' : 'none';
-        });
+
+        // Toggle Delete Mode
+        isDeleteMode = !isDeleteMode;
+        isEditMode = false; // Turn off edit mode if on
+
+        if (isDeleteMode) {
+            alert("Delete Mode ON: Select items and click 'Delete Selected'");
+            BIN_BTN.style.opacity = "0.5";
+        } else {
+            selectedDeleteIds.clear();
+            alert("Delete Mode OFF");
+            BIN_BTN.style.opacity = "1";
+        }
+        updateBatchDeleteUI();
+        loadMenuFromApi();
+    });
+
+    confirmDeleteBtn.addEventListener('click', (e) => {
+        e.preventDefault();
+        executeBatchDelete();
     });
 
     EDIT_BTN.addEventListener('click', (e) => {
         e.preventDefault();
         isEditMode = !isEditMode;
+        isDeleteMode = false; // Turn off delete mode if on
+        selectedDeleteIds.clear(); // Clear selections
+        updateBatchDeleteUI();
         if (isEditMode) {
             alert("Edit Mode ON: Click on a menu card to edit.");
             EDIT_BTN.style.opacity = "0.5"; // Visual feedback
