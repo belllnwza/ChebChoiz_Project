@@ -1,0 +1,117 @@
+body {
+    font-family: 'Kanit', sans-serif;
+    background-color: #fffbec;
+    margin: 0;
+    padding: 0;
+    min-height: 100vh;
+}
+
+/* Header / Navigation Icons */
+.Arrow_container {
+    display: flex;
+    flex-direction: column;
+    align-items: start;
+}
+
+.Arrow {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    width: 50px;
+    height: 50px;
+    cursor: pointer;
+}
+
+.icon_container {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    display: flex;
+    gap: 10px;
+    z-index: 100;
+}
+
+.icon_container>div {
+    cursor: pointer;
+    transition: transform 0.2s;
+}
+
+.icon_container>div:hover {
+    transform: scale(1.1);
+}
+
+.delete-btn_container {
+    margin-top: 50px;
+    margin-right: 15px;
+    display: none;
+    /* Hidden by default, toggled via JS */
+}
+
+/* Modal Styles */
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    overflow: auto;
+    background-color: rgba(0, 0, 0, 0.5);
+}
+
+.modal-content {
+    background-color: #fefefe;
+    margin: 15% auto;
+    padding: 20px;
+    border: 1px solid #888;
+    width: 80%;
+    max-width: 400px;
+    border-radius: 8px;
+    font-family: 'Kanit', sans-serif;
+}
+
+.close-btn {
+    color: #aaa;
+    float: right;
+    font-size: 28px;
+    font-weight: bold;
+    cursor: pointer;
+}
+
+.close-btn:hover {
+    color: black;
+}
+
+/* Form Styles */
+.form-group {
+    margin-bottom: 15px;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 5px;
+}
+
+.form-group input,
+.form-group select {
+    width: 100%;
+    padding: 8px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+}
+
+.save-btn {
+    background-color: #ffca28;
+    color: black;
+    padding: 10px;
+    border: none;
+    width: 100%;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: bold;
+}
+
+.save-btn:hover {
+    background-color: #ffc107;
+}

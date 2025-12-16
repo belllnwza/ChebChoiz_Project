@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="th">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ChebChoiz</title>
+    <link rel="stylesheet" href="ChebChoiz_main.css">
+    <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+</head>
+
+<body>
+
+    <header class="main-header">
+        <div class="Arrow_container">
+            <img class="Arrow" id="backButton" src="img\arrow2.png">
+        </div>
+
+        <h1 class="page-title">MENU</h1>
+        <div class="header-right">
+            <a href="#" class="history-btn" id="historyButton">History <i class="fas fa-history"></i></a>
+            <div class="image_container" id="userButton">
+                <img class="User" src="img\User_bg remove.png">
+                <p>User</p>
+            </div>
+        </div>
+    </header>
+
+    <div class="main-content-wrapper">
+
+        <div class="menu-left-panel">
+
+            <div class="menu-grid-container">
+                <div class="menu-grid">
+                </div>
+            </div>
+
+            <div class="utensil-icon">
+                <img src="img/Fork.png" alt="Fork and Spoon">
+            </div>
+
+        </div>
+
+        <div class="menu-right-panel">
+            <br>
+            <br>
+            <div class="filter-group">
+
+                <div class="filter-dropdown price-filter">
+                    <button class="filter-box" data-filter-type="price">Price <i
+                            class="fas fa-chevron-down"></i></button>
+                    <div class="dropdown-content">
+                        <a href="#" data-value="null">All Prices</a>
+                        <a href="#" data-value="1">50-100 Bath</a>
+                        <a href="#" data-value="2">100-150 Bath</a>
+                        <a href="#" data-value="3">150-300 Bath</a>
+                        <a href="#" data-value="4">300-450 Bath</a>
+                        <a href="#" data-value="5">450 Bath Up</a>
+                    </div>
+                </div>
+
+                <div class="filter-dropdown category-filter">
+                    <button class="filter-box" data-filter-type="category">Category <i
+                            class="fas fa-chevron-down"></i></button>
+                    <div class="dropdown-content">
+                        <a href="#" data-value="null">All Categories</a>
+                        <a href="#" data-value="Noodle">Noodle</a>
+                        <a href="#" data-value="Rice">Rice</a>
+                        <a href="#" data-value="Soup">Soup</a>
+                        <a href="#" data-value="Buffet">Buffet</a>
+                        <a href="#" data-value="Thai">Thai</a>
+                        <a href="#" data-value="Italian">Italian</a>
+                        <a href="#" data-value="Chainese">Chainese</a>
+                        <a href="#" data-value="Dessert">Dessert</a>
+                    </div>
+                </div>
+
+                <div class="filter-dropdown situation-filter">
+                    <button class="filter-box" data-filter-type="situation">Situation <i
+                            class="fas fa-chevron-down"></i></button>
+                    <div class="dropdown-content">
+                        <a href="#" data-value="null">All Situations</a>
+                        <a href="#" data-value="Breakfast">Breakfast</a>
+                        <a href="#" data-value="Lunch">Lunch</a>
+                        <a href="#" data-value="Dinner">Dinner</a>
+                        <a href="#" data-value="Snack">Snack</a>
+                        <a href="#" data-value="One-dish">One-dish</a>
+                        <a href="#" data-value="Fast Food">Fast Food</a>
+                        <a href="#" data-value="Celebrate">Celebrate</a>
+                        <a href="#" data-value="Together">Eat together</a>
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="randomizer-section">
+                <p class="random-text">RANDOM !</p>
+                <div class="dice-container" id="diceContainer">
+                    <div class="dice"></div>
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+
+    <script src="ChebChoiz_main.js"></script>
+</body>
+
+</html>

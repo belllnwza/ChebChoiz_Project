@@ -1,0 +1,23 @@
+body {
+    background-color: #fffbec;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    margin: 0;
+}
+
+body img {
+    width: 450px;
+    height: 500px;
+}
+
+/* ===== RESPONSIVE DESIGN ===== */
+/* Mobile: Reduce logo size */
+@media (max-width: 768px) {
+    body img {
+        width: 80vw;
+        height: auto;
+        max-width: 300px;
+    }
+}

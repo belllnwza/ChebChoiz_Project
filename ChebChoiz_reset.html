@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ChebChoiz</title>
+    <link rel="stylesheet" href="ChebChoiz_reset.css">
+    <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+
+<body>
+    <div class = "Arrow_container">
+        <img class = "Arrow" src = "img\arrow2.png">
+    </div>
+
+    <div class = "container">
+        <img class = "Secure" src = "img\secure.png">
+        <h2>Reset Password</h2>
+        <p>Please enter your username or user id and you can reset your password.</p>
+
+        <div class = "Reset-card">
+            <form action = "#" method = "POST">
+            <input type = "text" id = "username" name = "username" placeholder = "Username or User ID">
+
+        <div class = "password-field"> 
+            <input type = "password" id = "new_password" name = "new_password" placeholder = "New Password">
+            <span class = "password-toggle" id = "toggleNewPassword"> 
+                <img src = "img\close_eye.png" width = " 30px" height = "20px">
+            </span>
+        </div>
+
+            <div class = "password-field">
+                <input type = "password" id = "password" name = "password" placeholder = "Confirm Password">
+                <span class = "password-toggle" id = "togglePassword">
+                    <img src = "img\close_eye.png" width = " 30px" height = "20px">
+                </span>
+            </div>
+
+            <button type = "submit" class = "reset-btn">RESET</button>
+            </form>
+        </div>
+
+        <img class = "Fork" src="img\Fork.png">
+    </div>
+
+    <script src = "ChebChoiz_reset.js"></script>
+</body>
+</html>

@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="th">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ChebChoiz</title>
+    <link rel="stylesheet" href="ChebChoiz_history.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+
+<body>
+
+    <div class="Arrow_container">
+        <img class="Arrow" src="img\arrow2.png">
+    </div>
+
+    <div class="history-main-container">
+
+        <header class="history-header">
+            <div class="user-info-panel">
+                <div class="user-icon-large">
+                    <i class="fas fa-user-circle"></i>
+                </div>
+                <div class="user-details">
+                    <p class="user-id">User ID : <span id="user-id-display"></span></p>
+                    <p class="user-name">Username : <span id="user-name-display"></span></p>
+                    <button class="logout-btn">LOG OUT</button>
+                </div>
+            </div>
+        </header>
+
+        <div class="history-content">
+            <div class="history-controls">
+
+                <div class="header-left">
+                    <a href="#" class="history-btn">History <i class="fas fa-history"></i></a>
+                </div>
+
+                <div class="filter-controls-container">
+                    <label for="sort-by" class="filter-label-dropdown">Filters:</label>
+                    <select id="sort-by" class="filter-dropdown">
+                        <option value="latest">Recent date</option>
+                        <option value="oldest">Oldest date</option>
+                        <option value="price-low">Lowest price</option>
+                        <option value="price-high">Higtest price</option>
+                    </select>
+                </div>
+
+            </div>
+
+            <div class="history-list" id="history-list">
+
+                <p id="loading-message">Loading...</p>
+
+            </div>
+        </div>
+
+    </div>
+
+    <script src="ChebChoiz_history.js"></script>
+</body>
+
+</html>
