@@ -82,6 +82,7 @@ function validateForm()
         document.getElementById('new_password').style.border = '2px solid orange';
         confirmInput.style.border = '2px solid orange';
         alert('The new password does not match the confirmed password. Please check again.');
+        
         return false;
     } 
     else if (newPassword === confirmPassword && newPassword !== '') 

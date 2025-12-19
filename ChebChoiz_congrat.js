@@ -1,5 +1,5 @@
-document.addEventListener('DOMContentLoaded', () => {
-
+document.addEventListener('DOMContentLoaded', () => 
+{
     const mainTitle     = document.querySelector('.main-title');
     const part2Text     = document.querySelector('.congratulations-box .part2');
     const imageFrameImg = document.querySelector('.image-frame img');
@@ -11,7 +11,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const menuName     = localStorage.getItem('chosenMenuName');
     const menuImageSrc = localStorage.getItem('chosenMenuImage');
 
-    if (!menuName) {
+    if (!menuName) 
+    {
         window.location.href = 'ChebChoiz_main.html';
         return;
     }
@@ -30,7 +31,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
     if (menuImageSrc) 
     {
-        if (imageFrameImg) {
+        if (imageFrameImg) 
+        {
             imageFrameImg.src = menuImageSrc;
             imageFrameImg.alt = menuName ;
             imageFrameImg.classList.add('meal-image');
@@ -38,25 +40,30 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    const handleArrowBackClick = (e) => {
+    const handleArrowBackClick = (e) => 
+    {
         e.preventDefault();
         window.location.href = 'ChebChoiz_main.html';
     };
 
-    const handleHistoryClick = (e) => {
+    const handleHistoryClick = (e) => 
+    {
         e.preventDefault();
         window.location.href = 'ChebChoiz_history.html';
     };
 
-    if (arrowBackContainer) {
+    if (arrowBackContainer) 
+    {
         arrowBackContainer.addEventListener('click', handleArrowBackClick);
     }
 
-    if (historyBtn) {
+    if (historyBtn) 
+    {
         historyBtn.addEventListener('click', handleHistoryClick);
     }
 
-    if (userContainer) {
+    if (userContainer) 
+    {
         userContainer.addEventListener('click', handleHistoryClick);
     }
 });

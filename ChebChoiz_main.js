@@ -1,112 +1,80 @@
 document.addEventListener('DOMContentLoaded', () => {
 
-    const LOGIN_PAGE_URL = "ChebChoiz_loadpage.html";
+    const LOGIN_PAGE_URL        = "ChebChoiz_loadpage.html";
     const HISTORY_USER_PAGE_URL = "ChebChoiz_history.html";
     const CONFIRM_MENU_PAGE_URL = "ChebChoiz_result.html";
 
     let dishes = [];
 
-    const gridContainer = document.querySelector('.menu-grid');
+    const gridContainer   = document.querySelector('.menu-grid');
     const filterDropdowns = document.querySelectorAll('.filter-dropdown');
-    const diceContainer = document.getElementById('diceContainer');
-    const historyButton = document.getElementById('historyButton');
-    const userButton = document.getElementById('userButton');
+    const diceContainer   = document.getElementById('diceContainer');
+    const historyButton   = document.getElementById('historyButton');
+    const userButton      = document.getElementById('userButton');
 
     let currentFilters =
     {
-        price: null,
-        category: null,
+        price    : null,
+        category : null,
         situation: null
     };
 
-    const shuffleArray = (array) => {
+    const shuffleArray = (array) => 
+    {
         const shuffled = [...array];
-        for (let i = shuffled.length - 1; i > 0; i--) {
+        for (let i = shuffled.length - 1; i > 0; i--) 
+        {
             const j = Math.floor(Math.random() * (i + 1));
             [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
         }
         return shuffled;
     };
 
-    const fetchMenu = async (currentUserId) => {
-        try {
-            if (!currentUserId) return; // Wait for login
+    const fetchMenu = async (currentUserId) => 
+    {
+        try 
+        {
+            if (!currentUserId) return;
 
             const response = await fetch(`http://localhost:3000/api/menu?userId=${currentUserId}`);
             if (!response.ok) throw new Error('Failed to fetch menus');
 
             const data = await response.json();
 
-            // Map API data to Frontend structure
             dishes = data.map(item => ({
-                name: item.name,
-                price: item.price, // API returns 1-5 integer
-                category: item.category || '', // API returns string "Soup, Thai"
-                situation: item.situation || '', // API returns string
-                situationArray: item.situationArray || [], // API returns array
-                image: item.image
+                name           : item.name,
+                price          : item.price,
+                category       : item.category || '', 
+                situation      : item.situation || '',
+                situationArray : item.situationArray || [],
+                image          : item.image
             }));
 
-            // Randomize dishes on every refresh (fetch)
             dishes = shuffleArray(dishes);
 
-            applyFilters(); // Initial render with filters (or no filters)
-
-        } catch (error) {
+            applyFilters();
+        } 
+        catch (error) 
+        {
             console.error('Error fetching menu:', error);
             gridContainer.innerHTML = '<p class="error-text">Unable to load menus. Please check server connection.</p>';
         }
     };
 
-    const renderDishes = (dishArray) => {
+    const renderDishes = (dishArray) => 
+    {
         gridContainer.innerHTML = '';
 
         if (dishArray.length === 0) {
             gridContainer.innerHTML = '<p class="no-result">ไม่พบเมนูอาหารที่ตรงกับตัวกรอง</p>';
         }
 
-        dishArray.slice(0, 12).forEach(dish => {
+        dishArray.slice(0, 12).forEach(dish => 
+        {
             const item = document.createElement('div');
             item.classList.add('grid-item');
 
-            const imageOverrides =
-            {
-                "mushroom soup": "img/mushroom_soup.jpg",
-                "grill & bbq": "img/grillandbbq.png",
-                "yakisoba": "img/yakisoba.jpg",
-                "steak": "img/steak.jpg",
-                "sandwich": "img/sandwich.jpg",
-                "yen ta fo": "img/yentafo.jpg",
-                "tart": "img/tart.jpg",
-                "sushi": "img/sushi.jpg",
-                "steamed egg bun": "img/steamedeggbuns.jpg",
-                "shrimp fried rice": "img/shrimpfriedrice.jpg",
-                "seafood": "img/seafood.jpg",
-                "salad bar": "img/saladbar.webp",
-                "rad na": "img/radna.webp",
-                "risotto": "img/risotto.jpg",
-                "pumpkin soup": "img/pumpkinsoup.jpg",
-                "pork porridge": "img/porkporridge.webp",
-                "pork bone soup": "img/porkbonesoup.webp",
-                "pad see ew": "img/padseeew.jpg",
-                "omelet": "img/omelet.webp",
-                "nachos": "img/nachos.jpg",
-                "meatballs": "img/meatballs.jpg",
-                "mango sticky rice": "img/mangostickyrice.jpg",
-                "lasagna": "img/lasagna.webp",
-                "kimchi soup": "img/kimchisoup.webp",
-                "honey toast": "img/honeytoast.jpg",
-                "french fries": "img/frenchfries.jpg",
-                "doughnut": "img/doughnut.webp",
-                "curry rice": "img/curryrice.webp",
-                "chicken basil": "img/chickenbasil.jpg",
-                "boat noodles": "img/boatnoodles.webp",
-                "bingsu": "img/bingsu.webp",
-                "beef bowl": "img/beefbowl.jpg"
-
-            };
-
-            const finalImage = imageOverrides[dish.name.toLowerCase().trim()] || dish.image;
+            const finalImage = dish.image || 'img/Logo.png';
 
             item.innerHTML = `
                 <img src="${finalImage}?t=${new Date().getTime()}" alt="${dish.name}" class="dish-image">
@@ -118,41 +86,50 @@ document.addEventListener('DOMContentLoaded', () => {
         });
 
         const currentItems = gridContainer.querySelectorAll('.grid-item').length;
-        for (let i = currentItems; i < 12; i++) {
+        for (let i = currentItems; i < 12; i++) 
+        {
             const emptyItem = document.createElement('div');
             emptyItem.classList.add('grid-item', 'empty');
             gridContainer.appendChild(emptyItem);
         }
     };
 
-    const applyFilters = () => {
+    const applyFilters = () => 
+    {
         let filteredDishes = dishes;
 
-        if (currentFilters.price !== null) {
+        if (currentFilters.price !== null) 
+        {
             filteredDishes = filteredDishes.filter(dish => dish.price === currentFilters.price);
         }
 
-        if (currentFilters.category !== null) {
+        if (currentFilters.category !== null) 
+        {
             filteredDishes = filteredDishes.filter(dish => dish.category.includes(currentFilters.category));
         }
 
-        if (currentFilters.situation !== null) {
+        if (currentFilters.situation !== null) 
+        {
             filteredDishes = filteredDishes.filter(dish => dish.situationArray.includes(currentFilters.situation));
         }
 
         renderDishes(filteredDishes);
     };
 
-    filterDropdowns.forEach(dropdown => {
-        const box = dropdown.querySelector('.filter-box');
-        const content = dropdown.querySelector('.dropdown-content');
+    filterDropdowns.forEach(dropdown => 
+    {
+        const box        = dropdown.querySelector('.filter-box');
+        const content    = dropdown.querySelector('.dropdown-content');
         const filterType = box.dataset.filterType;
 
-        box.addEventListener('click', (e) => {
+        box.addEventListener('click', (e) => 
+        {
             e.stopPropagation();
 
-            filterDropdowns.forEach(d => {
-                if (d !== dropdown) {
+            filterDropdowns.forEach(d => 
+            {
+                if (d !== dropdown) 
+                {
                     d.classList.remove('active');
                 }
             });
@@ -160,16 +137,20 @@ document.addEventListener('DOMContentLoaded', () => {
             dropdown.classList.toggle('active');
         });
 
-        content.querySelectorAll('a').forEach(link => {
-            link.addEventListener('click', (e) => {
+        content.querySelectorAll('a').forEach(link => 
+        {
+            link.addEventListener('click', (e) => 
+            {
                 e.preventDefault();
                 const selectedValue = e.target.dataset.value;
-                const displayValue = e.target.textContent;
+                const displayValue  = e.target.textContent;
 
-                if (filterType === 'price') {
+                if (filterType === 'price') 
+                {
                     currentFilters[filterType] = selectedValue === 'null' ? null : parseInt(selectedValue);
                 }
-                else {
+                else 
+                {
                     currentFilters[filterType] = selectedValue === 'null' ? null : selectedValue;
                 }
 
@@ -181,20 +162,24 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
-    document.addEventListener('click', () => {
+    document.addEventListener('click', () => 
+    {
         filterDropdowns.forEach(d => d.classList.remove('active'));
     });
 
-    const randomizeFood = () => {
+    const randomizeFood = () => 
+    {
 
-        let dishesToRandomize = dishes.filter(dish => {
-            const meetsPrice = currentFilters.price === null || dish.price === currentFilters.price;
-            const meetsCategory = currentFilters.category === null || dish.category.includes(currentFilters.category);
+        let dishesToRandomize = dishes.filter(dish => 
+        {
+            const meetsPrice     = currentFilters.price     === null || dish.price === currentFilters.price;
+            const meetsCategory  = currentFilters.category  === null || dish.category.includes(currentFilters.category);
             const meetsSituation = currentFilters.situation === null || dish.situationArray.includes(currentFilters.situation);
             return meetsPrice && meetsCategory && meetsSituation;
         });
 
-        if (dishesToRandomize.length === 0) {
+        if (dishesToRandomize.length === 0) 
+        {
             alert('No random menu options were found. Please try changing the filters.');
             return;
         }
@@ -203,11 +188,12 @@ document.addEventListener('DOMContentLoaded', () => {
 
         const rollDuration = 1500;
 
-        setTimeout(() => {
+        setTimeout(() => 
+        {
 
             diceContainer.classList.remove('is-rolling');
 
-            const randomIndex = Math.floor(Math.random() * dishesToRandomize.length);
+            const randomIndex  = Math.floor(Math.random() * dishesToRandomize.length);
             const selectedDish = dishesToRandomize[randomIndex];
 
             localStorage.setItem('chosenMenuName', selectedDish.name);
@@ -223,31 +209,39 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
     const arrowButton = document.querySelector('.Arrow');
-    if (arrowButton) {
-        arrowButton.addEventListener('click', function () {
+    if (arrowButton) 
+    {
+        arrowButton.addEventListener('click', function () 
+        {
             window.location.href = LOGIN_PAGE_URL;
         });
         arrowButton.style.cursor = 'pointer';
     }
 
 
-    const navigateToHistoryUser = () => {
-        window.location.href = HISTORY_USER_PAGE_URL;
+    const navigateToHistoryUser = () => 
+    {
+        window.location.href    = HISTORY_USER_PAGE_URL;
     };
 
-    if (historyButton) {
+    if (historyButton) 
+    {
         historyButton.addEventListener('click', navigateToHistoryUser);
     }
 
-    if (userButton) {
+    if (userButton) 
+    {
         userButton.addEventListener('click', navigateToHistoryUser);
     }
 
-    if (diceContainer) {
+    if (diceContainer) 
+    {
         diceContainer.addEventListener('click', randomizeFood);
     }
 
-    const currentUserId = document.getElementById('user-id-display').innerText;
+    const currentUserId = localStorage.getItem('userId');
+    const userName      = localStorage.getItem('userName');
+
     fetchMenu(currentUserId);
 
     const Menu_Link = document.querySelector('.menu-grid-container')

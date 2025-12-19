@@ -55,11 +55,11 @@ signupLink.addEventListener('click', function (event)
     window.location.href = SIGNUP_PAGE_URL ;
 });
 
-const passwordInput = document.getElementById('password')        ;
+const passwordInput  = document.getElementById('password')        ;
 const togglePassword = document.getElementById('togglePassword') ;
-const eyeIcon = togglePassword.querySelector('img')              ;
+const eyeIcon        = togglePassword.querySelector('img')              ;
 
-const OPEN_EYE_SRC = "img/open_eye.png"    ;
+const OPEN_EYE_SRC   = "img/open_eye.png"    ;
 const CLOSED_EYE_SRC = "img/close_eye.png" ;
 
 togglePassword.addEventListener('click', function () 

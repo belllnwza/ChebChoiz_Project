@@ -5,20 +5,17 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ChebChoiz</title>
-    <!-- Stylesheets -->
     <link rel="stylesheet" href="ChebChoiz_listmenu.css">
-    <link rel="stylesheet" href="ChebChoiz_history.css"> <!-- Inherit History Styles -->
+    <link rel="stylesheet" href="ChebChoiz_history.css">
     <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 </head>
 
 <body>
-    <!-- Back Button -->
     <div class="Arrow_container">
         <img class="Arrow" src="img/arrow2.png" alt="Back">
     </div>
 
-    <!-- Action Icons -->
     <div class="icon_container">
         <div class="reset_icon" title="Reset Menu">
             <img class="reset" src="img/reset.png" width="32px" height="32px" alt="Reset">
@@ -37,21 +34,18 @@
         </div>
     </div>
 
-    <!-- Menu List Container -->
     <div style="max-width: 1000px; margin: 0 auto; padding: 20px;">
         <div class="history-list" id="menu-list">
             <p>Loading menus...</p>
         </div>
     </div>
 
-    <!-- Batch Delete Action Bar -->
     <div id="batch-delete-bar" class="batch-delete-actions">
         <button id="confirm-delete-btn" class="batch-delete-btn">
             <i class="fas fa-trash"></i> Delete Selected (<span id="selected-count">0</span>)
         </button>
     </div>
 
-    <!-- Add/Edit Modal -->
     <div id="menuModal" class="modal">
         <div class="modal-content">
             <span class="close-btn">&times;</span>
@@ -78,18 +72,16 @@
                 <div class="form-group">
                     <label>Categories:</label>
                     <div id="category-container" class="checkbox-group">
-                        <!-- Populated by JS -->
                     </div>
                 </div>
 
                 <div class="form-group">
                     <label>Situations:</label>
                     <div id="situation-container" class="checkbox-group">
-                        <!-- Populated by JS -->
                     </div>
                 </div>
 
-                <div class="form-group">
+                <div class="form-group" id="imageInputContainer">
                     <label for="menuImage">Image URL:</label>
                     <input type="text" id="menuImage" placeholder="img/default.png">
                 </div>
@@ -99,7 +91,6 @@
         </div>
     </div>
 
-    <!-- Scripts -->
     <script src="ChebChoiz_listmenu.js"></script>
 </body>
 

@@ -105,7 +105,6 @@ body {
     margin-top: 100px;
 }
 
-/* Dropdown Filter Styles */
 .filter-controls-container {
     display: flex;
     align-items: center;
@@ -143,9 +142,6 @@ body {
     border-color: #ff5353;
     box-shadow: 0 0 5px rgba(255, 83, 83, 0.5);
 }
-
-/* End Dropdown Filter Styles */
-
 
 .history-list {
     display: flex;

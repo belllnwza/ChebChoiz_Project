@@ -1,113 +1,61 @@
 const historyListContainer = document.getElementById('history-list');
 
-function parseDate(dateString) {
+function parseDate(dateString) 
+{
     const parts = dateString.split('/');
     return new Date(parts[2], parts[1] - 1, parts[0]);
 }
 
-function parsePriceRange(priceString) {
-    try {
+function parsePriceRange(priceString) 
+{
+    try 
+    {
         const numbers = priceString.match(/\d+(\s*-\s*\d+)?/);
-        if (numbers) {
+        if (numbers) 
+        {
             const range = numbers[0].split('-').map(s => Number(s.trim()));
-            if (range.length === 2) {
+            if (range.length === 2) 
+            {
                 return (range[0] + range[1]) / 2;
             }
-            else if (range.length === 1 && !isNaN(range[0])) {
+            else if (range.length === 1 && !isNaN(range[0])) 
+            {
                 return range[0];
             }
         }
         return 0;
     }
-    catch (e) {
+    catch (e) 
+    {
         console.error("Error parsing price:", priceString, e);
         return 0;
     }
 }
 
-function renderHistory(data) {
+function renderHistory(data) 
+{
     historyListContainer.innerHTML = '';
 
     const loadingMessage = document.getElementById('loading-message');
-    if (loadingMessage) {
+    if (loadingMessage) 
+    {
         loadingMessage.style.display = 'none';
     }
 
-    if (data.length === 0) {
-        historyListContainer.innerHTML = '<p style="text-align: center; color: gray;">ไม่พบประวัติการสุ่มที่บันทึกไว้</p>';
+    if (!data || data.length === 0) 
+    {
+        historyListContainer.innerHTML = '<p style="text-align: center; color: gray;">No random selection history was found.</p>';
         return;
     }
 
-    const imageOverrides = {
-        "mushroom soup": "img/mushroom_soup.jpg",
-        "grill & bbq": "img/grillandbbq.png",
-        "yakisoba": "img/yakisoba.jpg",
-        "steak": "img/steak.jpg",
-        "sandwich": "img/sandwich.jpg",
-        "yen ta fo": "img/yentafo.jpg",
-        "tart": "img/tart.jpg",
-        "sushi": "img/sushi.jpg",
-        "steamed egg bun": "img/steamedeggbuns.jpg",
-        "shrimp fried rice": "img/shrimpfriedrice.jpg",
-        "seafood": "img/seafood.jpg",
-        "salad bar": "img/saladbar.webp",
-        "rad na": "img/radna.webp",
-        "risotto": "img/risotto.jpg",
-        "pumpkin soup": "img/pumpkinsoup.jpg",
-        "pork porridge": "img/porkporridge.webp",
-        "pork bone soup": "img/porkbonesoup.webp",
-        "pad see ew": "img/padseeew.jpg",
-        "omelet": "img/omelet.webp",
-        "nachos": "img/nachos.jpg",
-        "meatballs": "img/meatballs.jpg",
-        "mango sticky rice": "img/mangostickyrice.jpg",
-        "lasagna": "img/lasagna.webp",
-        "kimchi soup": "img/kimchisoup.webp",
-        "honey toast": "img/honeytoast.jpg",
-        "french fries": "img/frenchfries.jpg",
-        "doughnut": "img/doughnut.webp",
-        "curry rice": "img/curryrice.webp",
-        "chicken basil": "img/chickenbasil.jpg",
-        "boat noodles": "img/boatnoodles.webp",
-        "bingsu": "img/bingsu.webp",
-        "beef bowl": "img/beefbowl.jpg",
-        "mac & cheese": "img/macandcheese.jpg",
-        "corn cream": "img/corncream.jpg",
-        "tom yum": "img/tomyum.jpg",
-        "pineapple fired rice": "img/pineapplefriedrice.jpg",
-        "hainanese chicken rice": "img/hainanesechickenrice.webp",
-        "hokkien mee": "img/hokkeinmee.jpg",
-        "kuay jub": "img/kuayjub.jpg",
-        "sichuan soup": "img/sichuansoup.webp",
-        "chocolate buffet": "img/chocolatebuffet.jpg",
-        "fish maw soup": "img/fishmawsoup.webp",
-        "beef wellington": "img/beefwellington.jpg",
-        "boston lobster": "img/bostonlobster.jpg",
-        "fresh berry buffet": "img/freshberrybuffet.jpg",
-        "fettuccine alfredo": "img/fettuccinealfredo.jpg",
-        "herb roasted chicken": "img/herbroastedchicken.jpg",
-        "foie gras": "img/foiegras.jpg",
-        "nuggets": "img/nuggets.jpg",
-        "fish & chips": "img/fishchips.webp",
-        "mapo tofu": "img/mapotofu.jpg",
-        "garlic bread": "img/garlicbread.jpg",
-        "sashimi buffet": "img/sashimi.jpg",
-        "chicken wrap": "img/chickenwrap.jpg",
-        "croissants": "img/croissants.jpg",
-        "roast duck noodles": "img/roastducknoodles.jpg",
-        "chicken wings": "img/chickenwings.webp",
-        "udon": "img/udon.jpg",
-        "cheesecake": "img/cheesecake.jpg",
-        "american fried rice": "img/americanfriedrice.webp",
-        "abalone soup": "img/abalonesoup.webp"
-    };
-
-    data.forEach(item => {
-        const card = document.createElement('div');
+    data.forEach(item => 
+    {
+        const card     = document.createElement('div');
         card.className = 'history-card';
 
-        const cleanName = item.name.toLowerCase().trim();
-        const finalImage = imageOverrides[cleanName] || item.image;
+        const cleanName   = item.name ? item.name.toLowerCase().trim() : 'unknown';
+        const finalImage  = item.image || 'img/Logo.png';
+        const displayDate = item.date || 'Unknown Date';
 
         card.innerHTML = `
             <div class="card-image-container">
@@ -115,29 +63,32 @@ function renderHistory(data) {
             </div>
             <div class="card-details">
                 <h3 class="card-menu-name">${item.name}</h3>
-                <p class="card-price">Price : ${item.price}</p>
-                <p class="card-category">Category : ${item.category}</p>
-                <p class="card-situation">Situation : ${item.situation}</p>
+                <p class="card-price">Price         : ${item.price || '-'}</p>
+                <p class="card-category">Category   : ${item.category || '-'}</p>
+                <p class="card-situation">Situation : ${item.situation || '-'}</p>
             </div>
-            <span class="card-date">DATE : ${item.date}</span>
+            <span class="card-date">DATE : ${displayDate}</span>
         `;
 
         historyListContainer.appendChild(card);
     });
 }
 
-function loadAndSortHistory(data, sortOrder) {
-    const sortedData = [...data].sort((a, b) => {
+function loadAndSortHistory(data, sortOrder) 
+{
+    const sortedData = [...data].sort((a, b) => 
+    {
 
-        switch (sortOrder) {
-            case 'oldest':
+        switch (sortOrder) 
+        {
+            case 'oldest'    :
                 return parseDate(a.date) - parseDate(b.date);
-            case 'price-low':
+            case 'price-low' :
                 return parsePriceRange(a.price) - parsePriceRange(b.price);
             case 'price-high':
                 return parsePriceRange(b.price) - parsePriceRange(a.price);
-            case 'latest':
-            default:
+            case 'latest'    :
+            default          :
                 return parseDate(b.date) - parseDate(a.date);
         }
     });
@@ -145,69 +96,81 @@ function loadAndSortHistory(data, sortOrder) {
     renderHistory(sortedData);
 }
 
-async function loadHistoryFromApi(sortOrder) {
+async function loadHistoryFromApi(sortOrder) 
+{
     const userId = localStorage.getItem('userId');
-    if (!userId) {
-        historyListContainer.innerHTML = '<p>กรุณาล็อกอินเพื่อดูประวัติ</p>';
+    if (!userId) 
+    {
+        historyListContainer.innerHTML = '<p>Please log in to view your history.</p>';
         return;
     }
 
-    try {
+    try 
+    {
         const response = await fetch(`http://localhost:3000/api/history/${userId}`);
-        const data = await response.json();
+        const data     = await response.json();
 
         loadAndSortHistory(data, sortOrder);
     }
-    catch (e) {
+    catch (e) 
+    {
         console.error(e);
         historyListContainer.innerHTML = '<p>ไม่สามารถโหลดประวัติได้</p>';
     }
 }
 
-async function deleteMenu(id) {
-    // 1. ตรวจสอบการยืนยันของผู้ใช้
-    if (confirm("คุณแน่ใจหรือไม่ว่าต้องการลบเมนูนี้?")) {
-        try {
-            // 2. ใช้ Template Literal (Backticks) ให้ถูกต้อง
-            const response = await fetch(`/api/menus/${id}?user_id=${currentUserId}`, { 
-                method: 'DELETE' 
+async function deleteMenu(id) 
+{
+    if (confirm("Are you sure you want to delete this menu item?")) 
+    {
+        try 
+        {
+            const response = await fetch(`/api/menus/${id}?user_id=${currentUserId}`, 
+            {
+                method: 'DELETE'
             });
-
-            // 3. ตรวจสอบสถานะการตอบกลับของ API
-            if (response.ok) { // response.ok เป็นจริงสำหรับ Status 200-299
-                alert("ลบเมนูเรียบร้อยแล้ว!");
-                location.reload(); // โหลดข้อมูลใหม่ที่อัปเดตแล้ว
-            } else {
-                // ถ้า API ตอบกลับด้วยสถานะผิดพลาด (เช่น 404, 500)
-                const errorData = await response.json(); // พยายามดึงข้อความ Error จาก JSON
-                alert(`เกิดข้อผิดพลาดในการลบเมนู: ${errorData.error || response.statusText}`);
+            if (response.ok) 
+            {
+                alert("The menu has been successfully removed!");
+                location.reload();
+            } 
+            else 
+            {
+                const errorData = await response.json();
+                alert(`An error occurred while deleting the menu : ${errorData.error || response.statusText}`);
             }
-        } catch (error) {
-            // 4. จัดการข้อผิดพลาดในการเชื่อมต่อ (Network Error)
+        } 
+        catch (error) 
+        {
             console.error("Fetch Error:", error);
-            alert("เกิดข้อผิดพลาดในการเชื่อมต่อเครือข่าย กรุณาลองใหม่อีกครั้ง");
+            alert("There was an error connecting to the network. Please try again.");
         }
     }
 }
 
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', () => 
+{
     const userNameDisplay = document.getElementById('user-name-display');
-    const userIdDisplay = document.getElementById('user-id-display');
+    const userIdDisplay   = document.getElementById('user-id-display');
 
-    if (localStorage.getItem('userName')) {
+    if (localStorage.getItem('userName')) 
+    {
         userNameDisplay.textContent = localStorage.getItem('userName');
     }
-    if (localStorage.getItem('userId')) {
+    if (localStorage.getItem('userId')) 
+    {
         userIdDisplay.textContent = localStorage.getItem('userId');
     }
 
     const initialSortOrder = 'latest';
-    const filterDropdown = document.getElementById('sort-by');
+    const filterDropdown   = document.getElementById('sort-by');
 
-    if (filterDropdown) {
+    if (filterDropdown) 
+    {
         filterDropdown.value = initialSortOrder;
 
-        filterDropdown.addEventListener('change', (e) => {
+        filterDropdown.addEventListener('change', (e) => 
+        {
             const selectedSortOrder = e.target.value;
             loadHistoryFromApi(selectedSortOrder);
         });
@@ -215,28 +178,16 @@ document.addEventListener('DOMContentLoaded', () => {
 
     loadHistoryFromApi(initialSortOrder);
 
-    document.querySelector('.Arrow_container').addEventListener('click', (e) => {
+    document.querySelector('.Arrow_container').addEventListener('click', (e) => 
+    {
         e.preventDefault();
         window.location.href = 'ChebChoiz_main.html';
     });
 
-    document.querySelector('.logout-btn').addEventListener('click', () => {
+    document.querySelector('.logout-btn').addEventListener('click', () => 
+    {
         alert('Log Out! Going to login page.');
         localStorage.clear();
         window.location.href = 'ChebChoiz_login.html';
     });
-
-    const currentUserId = document.getElementById('user-id-display').innerText;
-
-    async function loadMyMenus() {
-    // เรียก API โดยแนบ ID ไปด้วย
-    const response = await fetch('http://localhost:3000/api/my-menus/${currentUserId}');
-    const myMenus = await response.json();
-
-    // ส่งข้อมูลที่ได้ (ซึ่งเป็นของ User นี้คนเดียว) ไปวาดบนหน้าจอ
-    renderHistory(myMenus);
-}
-
-// เรียกทำงานเมื่อเปิดหน้าเว็บ
-loadMyMenus();
 });
